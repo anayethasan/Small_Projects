@@ -1,0 +1,17 @@
+{% load static %}
+
+{% block events %}
+
+<section class="hero-section -mt-[80px]">
+    <div class="h-screen bg-center bg-no-repeat bg-cover flex items-center justify-center relative"
+         style="background-image: url('{% static 'image/banner.jpeg' %}');">
+        <div class="bg-black bg-opacity-40 w-full h-full absolute top-0 left-0"></div>
+        <div class="relative z-10 text-center px-4">
+            <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-4">Welcome to My Events</h1>
+            <p class="text-white text-lg sm:text-xl md:text-2xl mb-6">Discover amazing events around you</p>
+        </div>
+    </div>
+</section>
+
+
+{% endblock events %}

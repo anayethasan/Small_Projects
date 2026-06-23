@@ -1,0 +1,193 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load custom_filters %}
+{% block title %}Profile{% endblock title %}
+{% block events %}
+
+<div class="min-h-screen bg-rose-50 py-8 px-4 -mb[100px]">
+    <div class="max-w-5xl mx-auto flex flex-col lg:flex-row gap-6">
+
+        {% comment %} Sidebar {% endcomment %}
+        <aside class="w-full lg:w-64 flex-shrink-0 -mb-[100px]">
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="px-6 py-5 border-b border-gray-100">
+                    <h2 class="text-lg font-bold text-rose-500 tracking-tight">
+                        <i class="fa-solid fa-gear mr-2"></i>My Account
+                    </h2>
+                </div>
+                <nav class="p-3 space-y-1">
+                    <a href="{% url 'profile' %}"
+                       class="flex items-center gap-3 px-4 py-2.5 rounded-lg bg-rose-50 text-rose-600 font-semibold text-sm">
+                        <i class="fa-solid fa-user w-4 text-center"></i> Profile
+                    </a>
+                    <a href="{% url 'edit-profile' %}"
+                       class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-gray-600 hover:bg-rose-50 hover:text-rose-500 font-medium text-sm transition-colors">
+                        <i class="fa-solid fa-pen-to-square w-4 text-center"></i> Edit Profile
+                    </a>
+                    <a href="{% url 'change-password' %}"
+                       class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-gray-600 hover:bg-rose-50 hover:text-rose-500 font-medium text-sm transition-colors">
+                        <i class="fa-solid fa-lock w-4 text-center"></i> Change Password
+                    </a>
+                    <a href="{% url 'dashboard' %}"
+                       class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-gray-600 hover:bg-rose-50 hover:text-rose-500 font-medium text-sm transition-colors">
+                        <i class="fa-solid fa-chart-line w-4 text-center"></i> Dashboard
+                    </a>
+                </nav>
+            </div>
+        </aside>
+
+        {% comment %} Main Content {% endcomment %}
+        <main class="flex-1">
+
+            {% if messages %}
+            <div class="mb-4">
+                {% for message in messages %}
+                <div class="px-4 py-3 rounded-lg mb-2
+                    {% if message.tags == 'success' %}bg-green-100 text-green-800
+                    {% elif message.tags == 'error' %}bg-red-100 text-red-800
+                    {% else %}bg-blue-100 text-blue-800{% endif %}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+
+                {% comment %} Profile Header {% endcomment %}
+                <div class="bg-gradient-to-r from-rose-500 to-rose-400 px-8 py-8">
+                    <div class="flex flex-col sm:flex-row items-center sm:items-end gap-5">
+
+                        {% comment %} Profile Image {% endcomment %}
+                        <div class="relative">
+                            {% if user.profile_image %}
+                                <img src="{{ user.profile_image.url }}"
+                                     alt="Profile"
+                                     class="w-24 h-24 rounded-full object-cover border-4 border-white shadow-lg">
+                            {% else %}
+                                <div class="w-24 h-24 rounded-full border-4 border-white shadow-lg bg-white flex items-center justify-center">
+                                    <span class="text-rose-500 font-bold text-2xl">{{ user.username|slice:":2"|upper }}</span>
+                                </div>
+                            {% endif %}
+                            <a href="{% url 'edit-profile' %}"
+                               class="absolute bottom-0 right-0 w-7 h-7 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-rose-50 transition">
+                                <i class="fa-solid fa-pen text-rose-500 text-xs"></i>
+                            </a>
+                        </div>
+
+                        <div class="text-center sm:text-left">
+                            <h2 class="text-white text-2xl font-bold">
+                                {{ user.get_full_name|default:user.username }}
+                            </h2>
+                            <p class="text-rose-100 text-sm mt-1">
+                                <i class="fa-solid fa-at mr-1"></i>{{ user.username }}
+                            </p>
+                            <span class="inline-block mt-2 text-xs bg-white bg-opacity-20 text-white px-3 py-1 rounded-full font-medium">
+                                {% if user.is_superuser %}Superuser
+                                {% else %}{{ user.groups.all.0.name|default:"User" }}{% endif %}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                {% comment %} Profile Details {% endcomment %}
+                <div class="p-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+
+                    {% comment %} Personal Info {% endcomment %}
+                    <div>
+                        <h3 class="text-xs font-bold text-rose-500 uppercase tracking-widest mb-4">
+                            <i class="fa-solid fa-circle-info mr-1"></i> Personal Information
+                        </h3>
+                        <div class="space-y-4">
+
+                            <div class="flex items-start gap-3">
+                                <div class="w-8 h-8 bg-rose-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                                    <i class="fa-solid fa-envelope text-rose-400 text-sm"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-gray-400 font-medium">Email</p>
+                                    <p class="text-gray-700 text-sm">{{ user.email|default:"Not provided" }}</p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start gap-3">
+                                <div class="w-8 h-8 bg-rose-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                                    <i class="fa-solid fa-phone text-rose-400 text-sm"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-gray-400 font-medium">Phone</p>
+                                    <p class="text-gray-700 text-sm">{{ user.phone_number|default:"Not provided" }}</p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start gap-3">
+                                <div class="w-8 h-8 bg-rose-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                                    <i class="fa-solid fa-user text-rose-400 text-sm"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-gray-400 font-medium">Full Name</p>
+                                    <p class="text-gray-700 text-sm">{{ user.get_full_name|default:"Not provided" }}</p>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    {% comment %} Account Info {% endcomment %}
+                    <div>
+                        <h3 class="text-xs font-bold text-rose-500 uppercase tracking-widest mb-4">
+                            <i class="fa-solid fa-shield-halved mr-1"></i> Account Information
+                        </h3>
+                        <div class="space-y-4">
+
+                            <div class="flex items-start gap-3">
+                                <div class="w-8 h-8 bg-rose-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                                    <i class="fa-solid fa-calendar-days text-rose-400 text-sm"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-gray-400 font-medium">Member Since</p>
+                                    <p class="text-gray-700 text-sm">{{ user.date_joined|humanized_date }}</p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start gap-3">
+                                <div class="w-8 h-8 bg-rose-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                                    <i class="fa-solid fa-clock text-rose-400 text-sm"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-gray-400 font-medium">Last Login</p>
+                                    <p class="text-gray-700 text-sm">{{ user.last_login|humanized_date }}</p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start gap-3">
+                                <div class="w-8 h-8 bg-rose-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                                    <i class="fa-solid fa-ticket text-rose-400 text-sm"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-gray-400 font-medium">Total RSVPs</p>
+                                    <p class="text-gray-700 text-sm">{{ user.rsvps.count }} Events</p>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+
+                {% comment %} Bio {% endcomment %}
+                <div class="px-8 pb-8">
+                    <h3 class="text-xs font-bold text-rose-500 uppercase tracking-widest mb-3">
+                        <i class="fa-solid fa-quote-left mr-1"></i> Bio
+                    </h3>
+                    <p class="text-gray-600 text-sm leading-relaxed bg-rose-50 rounded-lg px-4 py-3 border border-rose-100">
+                        {{ user.bio|default:"No bio added yet." }}
+                    </p>
+                </div>
+
+            </div>
+        </main>
+    </div>
+</div>
+
+{% endblock events %}
